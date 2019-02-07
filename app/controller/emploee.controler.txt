@@ -1,0 +1,90 @@
+const express = require('express');
+    const router=express.Router();
+    const {Pool,Client} = require('pg');
+
+    const connectionString = 'postgresql://postgres:1@localhost:5432/dbAngular'
+
+    // const client = new Client({
+    //   connectionString:connectionString
+    // })
+
+      router.get('/employees', (err, res, done) => {
+        const client = new Pool({
+          connectionString:connectionString
+        })
+
+        client.connect((err)=>{
+          if(err!=undefined)
+          {
+          console.log('connection not established message as follow '+err.message+'')    
+          }
+        });
+        client.query('select * from getEmployees();', (err, result) => {
+          if (err) {          
+              console.log(err.stack)     ;
+              client.end();  
+          } else {                                    
+            client.end();
+            console.log(result.rows);
+            res.json(result.rows);                                  
+          }
+        })     
+    })
+
+    //SAVE
+    router.post('/employees', (req, res,next) => {
+      const client = new Pool({
+        connectionString:connectionString
+      })
+      console.log( req.body);
+    var employee=req.body;
+
+    const query = {
+      text: 'INSERT INTO employes(name) VALUES($1)',
+      values: [employee.name]
+    }
+
+    client.connect((err)=>{
+      if(err!=undefined)
+      {
+      console.log('connection not established '+err.message+'')    
+      } 
+    });
+
+    client.query(query, (err, result) => {
+      if (err) {
+        console.log('ERRROOORRRRR');
+        client.end();
+        console.log(err.stack)
+      } else {
+        console.log('SAVEEEEE');
+        client.end();
+      //  console.log(res.rows[0])
+      res.json();
+      }
+    })
+
+    });
+
+    //delete
+    router.delete('/employees/:id', (req, res,next) => {
+      const client = new Pool({
+        connectionString:connectionString
+      });
+    console.log('id passed is ' + req.param.id);
+      client.query('DELETE FROM employes WHERE empid=($1)',[req.param.id], (err, result) => {
+        if (err) {
+          console.log('ERRROOORRRRR');
+          client.end();
+          console.log(err.stack)
+        } else {
+          console.log('SAVEEEEE');
+          client.end();
+        //  console.log(res.rows[0])
+        res.json();
+        }
+
+      });
+    });
+
+  module.exports=router;

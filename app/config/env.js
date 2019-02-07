@@ -2,8 +2,8 @@ const env = {
   database: 'todo',
   username: 'postgres',
   password: 'TjYz3m',
-  host: '201.20.7.33',
-  port: 5890, 
+  host: '172.16.16.118',
+  port: 5432, 
   dialect: 'postgres',
   pool: {
 	  max: 5,
